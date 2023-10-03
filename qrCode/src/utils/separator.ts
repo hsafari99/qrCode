@@ -1,6 +1,6 @@
 import { QrCodeType } from "../components/QrCodeTypes";
-import { emptyVal, mergePatternToTemplate } from "./general";
-import { finderPatternSize } from "./finder";
+import { mergePatternToTemplate } from "./general";
+import { emptyVal, finderPatternSize } from "./constants";
 
 const horizontalSeparator: QrCodeType = [Array(finderPatternSize + 1).fill(emptyVal)];
 const verticalSeparator:QrCodeType = Array(finderPatternSize + 1).fill(0).map((index:number) => [emptyVal]);

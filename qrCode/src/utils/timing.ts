@@ -1,6 +1,6 @@
 import { QrCodeNodeType, QrCodeType } from "../components/QrCodeTypes";
-import { emptyVal, fillVal, mergePatternToTemplate } from "./general";
-import { finderPatternSize } from "./finder";
+import { mergePatternToTemplate } from "./general";
+import { emptyVal, fillVal, finderPatternSize } from "./constants";
 
 const getHorizontalTiming = (templateSize: number):QrCodeType => [ Array(templateSize - (finderPatternSize * 2)).fill(emptyVal).map((val:QrCodeNodeType, index: number) => index%2 == 0 ? fillVal : emptyVal) ];
 
@@ -16,4 +16,4 @@ const mergeTimingToTemplate = (template:QrCodeType): QrCodeType => {
     return mergedTemplate;
 };
 
-export { mergeTimingToTemplate };
+export { mergeTimingToTemplate, };

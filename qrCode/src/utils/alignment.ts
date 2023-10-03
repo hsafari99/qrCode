@@ -1,8 +1,6 @@
 import { QrCodeType } from "../components/QrCodeTypes";
-import { finderPatternSize } from "./finder";
-import { getPattern, getQrSizeByVersion, mergePatternToTemplate } from "./general";
-
-const alignmentPatternSize = 5;
+import { getPattern, getQrSizeByVersion, mergePatternToTemplate, nodeIsInFinderBlock, } from "./general";
+import { alignmentPatternSize } from "./constants";
 
 const getAlignmentQtyByVersion = (version:number): {qty: number, loc: number[]} => {
     switch (version) {
@@ -104,18 +102,8 @@ const getLocationsBySize = (size: number):number[][] => {
     });
 
     const filteredLocation:number[][] = locations.filter((point: number[]) => {
-        const [nodex, nodey]:number[] = point;
-        if (nodex < finderPatternSize && nodey < finderPatternSize) {
-            return false;
-        }
-        if (nodex > (templateSize - finderPatternSize -1) && nodey < finderPatternSize) {
-            return false;
-        }
-        if (nodex <finderPatternSize && nodey > (templateSize - finderPatternSize -1) ) {
-            return false;
-        }
-
-        return true;
+        const [x, y]:number[] = point;
+        return nodeIsInFinderBlock([x, y], templateSize) ? false : true;
     });
 
     return filteredLocation;
@@ -133,4 +121,23 @@ const mergeAlignmentToTemplate = (template:QrCodeType, size: number): QrCodeType
     return newTemplate;
 };
 
-export { mergeAlignmentToTemplate };
+const nodeIsInAlignmentBlock = ([x, y]: [number, number], size:number): boolean => {
+    const locations = getLocationsBySize(size);
+
+    let isInBlock = false;
+    locations.forEach((location) => {
+        const xStart = location[0] - 2;
+        const yStart = location[1] - 2;
+        const xFinish = location[0] + 2;
+        const yFinish = location[1] + 2;
+
+        const xInAlignmentBlock = x >= xStart && x <= xFinish;
+        const yInAlignmentBlock = y >= yStart && y <= yFinish;
+        if (xInAlignmentBlock && yInAlignmentBlock) {
+            isInBlock = true;
+        }
+    })
+
+    return isInBlock;
+}
+export { mergeAlignmentToTemplate, nodeIsInAlignmentBlock, };

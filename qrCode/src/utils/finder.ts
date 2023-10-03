@@ -1,7 +1,6 @@
 import { QrCodeType } from "../components/QrCodeTypes";
 import { getPattern, mergePatternToTemplate, } from './general';
-
-const finderPatternSize = 7;
+import { finderPatternSize } from "./constants";
 
 const getFinderPatternArray: QrCodeType = getPattern(finderPatternSize);
 
@@ -15,4 +14,4 @@ const mergeFinderToTemplate = (template: QrCodeType): QrCodeType => {
     return mergedTemplate;
 }
 
-export { finderPatternSize, mergeFinderToTemplate };
+export { mergeFinderToTemplate, };

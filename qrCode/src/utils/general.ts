@@ -1,21 +1,19 @@
 import { QrCodeType } from "../components/QrCodeTypes";
+import { nodeIsInAlignmentBlock } from "./alignment";
+import { fillVal, emptyVal, finderPatternSize, } from "./constants";
 
-const fillVal = 1;
-const emptyVal = 0;
-
-const getQrSizeByVersion = (version: string):number => {
-    const size: {[key: string]: number} = {
-        '1': 21,
-        '2': 25,
-        '6': 41,
-        '7': 45,
-        '14': 73,
-        '21': 101,
-        '40': 177,
-    };
-
-    return size[version];
+const size: {[key: string]: number} = {
+    '1': 21,
+    '2': 25,
+    '6': 41,
+    '7': 45,
+    '14': 73,
+    '21': 101,
+    '40': 177,
 };
+
+const getQrSizeByVersion = (version: string):number => size[version];
+const getVersionBySize = (length: number):string => Object.keys(size).filter(version => size[version] == length)[0] || '0';
 
 const microQrSizeByVersion = {
     'M1': 11,
@@ -85,12 +83,43 @@ const mergePatternToTemplate = (template: QrCodeType, pattern: QrCodeType, merge
     return mergedTemplate;
 };
 
+const nodeIsInFunctionalBlock = ([x, y]:[number, number], size: number):boolean => {
+    const version = getVersionBySize(size);
+    if (
+        nodeIsInFinderBlock([x, y], size)
+        || nodeIsInTimingBlock([x, y])
+        || nodeIsInAlignmentBlock([x, y], parseInt(version))
+    ) {
+        return true;
+    }
+
+    return false;
+};
+
+const nodeIsInTimingBlock = ([x, y]: [number, number]):boolean => ((x == finderPatternSize -1) || (y == finderPatternSize - 1));
+const nodeIsInFinderBlock = ([x, y]:[number, number], size: number): boolean => {
+    if (x < finderPatternSize + 1 && y < finderPatternSize + 1) {
+        return true;
+    }
+
+    if (x > (size - (finderPatternSize + 2)) && y < finderPatternSize + 1) {
+        return true;
+    }
+
+    if (x < finderPatternSize + 1 && y > (size - (finderPatternSize + 2))) {
+        return true;
+    }
+
+    return false;
+}
+
 export {
-    fillVal,
-    emptyVal,
     getQrSizeByVersion,
     microQrSizeByVersion,
     getPattern,
     getQrTempate,
     mergePatternToTemplate,
+    nodeIsInFunctionalBlock,
+    nodeIsInTimingBlock,
+    nodeIsInFinderBlock,
 };
